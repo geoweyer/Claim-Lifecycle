@@ -51,3 +51,13 @@ All six planned phases are built. The site is not deployed; run it locally.
   inpatient procedure codes and the payment group shown on claims are illustrative.
 - Procedure codes are omitted. CPT codes and descriptions are copyrighted by the
   American Medical Association; services are described in plain language.
+
+## Third-party notices
+
+- This material contains content from LOINC (http://loinc.org). LOINC is copyright © 1995-2026, Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at http://loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.
+- CPT is a registered trademark of the American Medical Association. No CPT codes or
+  descriptions are included.
+- Adjustment reason codes and the sample claim message lines follow standards
+  published by X12.
+- Medicare rates, ICD-10-CM, ICD-10-PCS, MS-DRG and place-of-service codes are works
+  of the US government.

@@ -18,6 +18,7 @@ export function InputsPanel({ inputs, update, reset }: Props) {
       <span className="input-wrap">
         {opts.prefix && <span className="affix">{opts.prefix}</span>}
         <input
+          id={`setting-${key}`}
           type="number"
           inputMode="decimal"
           min={0}
@@ -36,7 +37,7 @@ export function InputsPanel({ inputs, update, reset }: Props) {
 
   const check = (key: 'hdhp' | 'antiplatelet' | 'pcsk9' | 'selfFunded', label: string) => (
     <label className="check">
-      <input type="checkbox" checked={inputs[key]} onChange={(e) => update({ [key]: e.target.checked })} />
+      <input id={`setting-${key}`} type="checkbox" checked={inputs[key]} onChange={(e) => update({ [key]: e.target.checked })} />
       <span>{label}</span>
     </label>
   );

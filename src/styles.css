@@ -20,7 +20,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     color-scheme: dark;
     --page: #121211;
     --surface: #1a1a19;
@@ -42,6 +42,27 @@
   }
 }
 
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --page: #121211;
+  --surface: #1a1a19;
+  --border: #383835;
+  --text: #f0efec;
+  --text-2: #c3c2b7;
+  --accent: #6da7ec;
+  --on-accent: #0b0b0b;
+  --track: #2b2b29;
+  --plan: #3987e5;
+  --patient-ded: #d95926;
+  --patient-coins: #199e70;
+  --writeoff: #6b6a65;
+--employer: #9085e9;
+--stoploss: #c98500;
+  --good: #0ca30c;
+  --warn-bg: #3a2f10;
+  --warn-text: #f3dfa6;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -57,7 +78,9 @@ body {
 main {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 24px 16px 64px;
+  padding-block: 24px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 
 h1 {
@@ -1094,9 +1117,18 @@ span[title] {
   top: 8px;
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--surface);
+}
+
 .topbar {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 10;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -1105,7 +1137,9 @@ span[title] {
 .topbar-inner {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 8px 16px;
+  padding-block: 8px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: flex;
   flex-wrap: wrap;
   align-items: center;

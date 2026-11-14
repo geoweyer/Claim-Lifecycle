@@ -617,6 +617,7 @@ export function ClaimCycle({ step, inputs, econ }: Props) {
         <label className="claim-pick">
           <span>Claim</span>
           <select
+            id="claim-select"
             value={claim.id}
             onChange={(e) => {
               setClaimId(e.target.value);

@@ -115,7 +115,11 @@ export function useInputs(): [Inputs, (patch: Partial<Inputs>) => void, () => vo
   useEffect(() => {
     const encoded = encodeInputs(inputs);
     const url = window.location.pathname + window.location.search + (encoded ? `#${encoded}` : '');
-    window.history.replaceState(null, '', url);
+    try {
+      window.history.replaceState(null, '', url);
+    } catch {
+      // Some embedded viewers do not allow the address to change; the scenario still works in the page.
+    }
   }, [inputs]);
 
   const update = (patch: Partial<Inputs>) => setInputs((prev) => ({ ...prev, ...patch }));

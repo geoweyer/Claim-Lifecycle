@@ -224,6 +224,9 @@ export function Languages({ view }: Props) {
         shown without a paid licence. Several others are copyrighted but free to use, and the federal code sets are
         in the public domain.
       </p>
+      <p className="footnote">
+        This material contains content from LOINC (http://loinc.org). LOINC is copyright © 1995-2026, Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at http://loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.
+      </p>
     </section>
   );
 }
