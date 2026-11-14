@@ -1,80 +1,57 @@
-import { useMemo, useState } from 'react';
-import { adjudicateEpisode, summarizeByStep } from './engine/adjudicate';
-import {
-  buildEvents,
-  DEFAULT_CONTRACT,
-  DEFAULT_ECONOMICS,
-  DEFAULT_PHARMACY,
-  DEFAULT_PLAN,
-  OPTIONAL_RX_DEFAULT_ON,
-  STEPS,
-} from './data/episode';
+import { useMemo } from 'react';
+import { InputsPanel } from './components/InputsPanel';
+import { Meters } from './components/Meters';
+import { StepDetail } from './components/StepDetail';
+import { Timeline } from './components/Timeline';
+import { buildEpisodeView, usd0 } from './episodeView';
+import { useInputs } from './state';
+import './styles.css';
 
-const usd = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-
-// Phase 1 placeholder: proves the engine end to end. The timeline, claim cycle and
-// money-flow views replace this table in later phases.
 export default function App() {
-  const [deductible, setDeductible] = useState(DEFAULT_PLAN.deductible);
-  const [coinsurance, setCoinsurance] = useState(DEFAULT_PLAN.coinsurance);
-  const [moop, setMoop] = useState(DEFAULT_PLAN.moop);
+  const [inputs, update, reset] = useInputs();
+  const view = useMemo(() => buildEpisodeView(inputs), [inputs]);
+  const step = inputs.step;
+  const setStep = (n: number) => update({ step: Math.min(view.steps.length, Math.max(1, n)) });
 
-  const steps = useMemo(() => {
-    const results = adjudicateEpisode(buildEvents(), {
-      plan: { ...DEFAULT_PLAN, deductible, coinsurance, moop },
-      contract: DEFAULT_CONTRACT,
-      econ: DEFAULT_ECONOMICS,
-      pharmacy: DEFAULT_PHARMACY,
-      enabledOptionalRx: OPTIONAL_RX_DEFAULT_ON,
-    });
-    return summarizeByStep(results);
-  }, [deductible, coinsurance, moop]);
-
-  const cell = { padding: '6px 12px', textAlign: 'right' as const, borderBottom: '1px solid #ddd' };
-  const field = (label: string, value: number, set: (n: number) => void, step: number) => (
-    <label style={{ marginRight: 16 }}>
-      {label}{' '}
-      <input type="number" value={value} step={step} min={0} onChange={(e) => set(Number(e.target.value))} style={{ width: 90 }} />
-    </label>
-  );
+  const tiles: [string, number, string][] = [
+    ['Billed charges', view.totals.charge, 'What providers list on the claims'],
+    ['Allowed amount', view.totals.allowed, 'What the contracts say the care is worth'],
+    ['Plan pays', view.totals.planPaid, 'Paid by the insurer or the employer'],
+    ['Patient pays', view.totals.patientPaid, 'Including over-the-counter purchases'],
+  ];
 
   return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 900, margin: '0 auto', padding: 16 }}>
-      <h1>Claim Lifecycle Explorer</h1>
-      <p>Engine preview. Prices are illustrative and have not been checked against current Medicare fee schedules.</p>
-      <p>
-        {field('Deductible', deductible, setDeductible, 250)}
-        {field('Coinsurance', coinsurance, setCoinsurance, 0.05)}
-        {field('Out-of-pocket maximum', moop, setMoop, 500)}
-      </p>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <thead>
-            <tr>
-              <th style={{ ...cell, textAlign: 'left' }}>Step</th>
-              <th style={cell}>Billed</th>
-              <th style={cell}>Allowed</th>
-              <th style={cell}>Patient pays</th>
-              <th style={cell}>Plan pays</th>
-              <th style={cell}>Out-of-pocket so far</th>
-            </tr>
-          </thead>
-          <tbody>
-            {steps.map((s) => (
-              <tr key={s.stepId}>
-                <td style={{ ...cell, textAlign: 'left' }}>
-                  {s.stepId}. {STEPS.find((x) => x.id === s.stepId)?.title}
-                </td>
-                <td style={cell}>{usd(s.charge)}</td>
-                <td style={cell}>{usd(s.allowed)}</td>
-                <td style={cell}>{usd(s.patientPaid)}</td>
-                <td style={cell}>{usd(s.planPaid)}</td>
-                <td style={cell}>{usd(s.after.oopMet)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <main className="viz-root">
+      <header>
+        <h1>Claim Lifecycle Explorer</h1>
+        <p>
+          One patient, from a preventive visit to bypass surgery and recovery. Step through the episode to see what is
+          billed, what is allowed, and who pays.
+        </p>
+        <p className="notice">
+          Prices are illustrative. Medicare amounts are 2026 national rates with no geographic adjustment; commercial
+          prices are those rates times the contract percentages below.
+        </p>
+      </header>
+
+      <Timeline view={view} step={step} onStep={setStep} />
+      <Meters view={view} step={step} />
+      <StepDetail step={view.steps[step - 1]} inputs={inputs} />
+
+      <section aria-labelledby="totals-heading">
+        <h2 id="totals-heading">The whole episode</h2>
+        <dl className="tiles">
+          {tiles.map(([label, value, hint]) => (
+            <div className="tile" key={label}>
+              <dt>{label}</dt>
+              <dd>{usd0(value)}</dd>
+              <p>{hint}</p>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <InputsPanel inputs={inputs} update={update} reset={reset} />
     </main>
   );
 }

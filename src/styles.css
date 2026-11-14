@@ -1,0 +1,484 @@
+:root {
+  color-scheme: light;
+  --page: #f4f3f0;
+  --surface: #fcfcfb;
+  --border: #dddbd5;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --accent: #1c5cab;
+  --on-accent: #ffffff;
+  --track: #e9e7e2;
+  --plan: #2a78d6;
+  --patient-ded: #eb6834;
+  --patient-coins: #1baf7a;
+  --writeoff: #b9b7b0;
+  --good: #0a7d0a;
+  --warn-bg: #fdf1d3;
+  --warn-text: #5a4300;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #121211;
+    --surface: #1a1a19;
+    --border: #383835;
+    --text: #f0efec;
+    --text-2: #c3c2b7;
+    --accent: #6da7ec;
+    --on-accent: #0b0b0b;
+    --track: #2b2b29;
+    --plan: #3987e5;
+    --patient-ded: #d95926;
+    --patient-coins: #199e70;
+    --writeoff: #6b6a65;
+    --good: #0ca30c;
+    --warn-bg: #3a2f10;
+    --warn-text: #f3dfa6;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.45;
+}
+
+main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.75rem;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+h3 {
+  margin: 24px 0 8px;
+  font-size: 1rem;
+}
+
+header p {
+  margin: 4px 0;
+  max-width: 70ch;
+  color: var(--text-2);
+}
+
+.notice {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-size: 0.875rem;
+}
+
+section {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.muted {
+  color: var(--text-2);
+}
+
+p.muted {
+  margin: -8px 0 12px;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Timeline */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.step-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px;
+  text-align: left;
+  border-radius: 8px;
+  transition: opacity 0.3s, border-color 0.3s;
+}
+
+.step-card.future {
+  opacity: 0.55;
+}
+
+.step-card.current {
+  border: 2px solid var(--accent);
+  padding: 11px;
+}
+
+.step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--track);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.step-card.current .step-num,
+.step-card.done .step-num {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.step-title {
+  font-weight: 600;
+}
+
+.step-setting,
+.step-rx {
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+.step-pay {
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--page);
+}
+
+.meter-value .badge {
+  margin-left: 8px;
+}
+
+.badge.phase-moopReached,
+.badge.phase-planPaysAll,
+.badge.phase-deductibleMet {
+  border-color: var(--good);
+}
+
+/* Meters and bars */
+
+.meter {
+  margin-top: 14px;
+}
+
+.meter-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-bottom: 6px;
+}
+
+.meter-name {
+  font-weight: 600;
+}
+
+.meter-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  display: flex;
+  gap: 2px;
+  height: 16px;
+  background: var(--track);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.track.split {
+  min-width: 140px;
+  height: 12px;
+  background: transparent;
+}
+
+.fill {
+  height: 100%;
+  min-width: 0;
+  transition: width 0.6s ease;
+}
+
+.fill[style*='width: 0%'] {
+  display: none;
+}
+
+.fill-ded {
+  background: var(--patient-ded);
+}
+
+.fill-coins {
+  background: var(--patient-coins);
+}
+
+.fill-plan {
+  background: var(--plan);
+}
+
+.fill-writeoff {
+  background: var(--writeoff);
+}
+
+.legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.detail > .legend {
+  margin: 0 0 12px;
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 2px;
+}
+
+/* Tables */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+thead th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+tbody th {
+  font-weight: 500;
+  min-width: 220px;
+}
+
+.num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+td[title] {
+  text-decoration: underline dotted var(--text-2);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.kind {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.masked {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 1px;
+  color: var(--text-2);
+  cursor: help;
+}
+
+.footnote {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+/* Totals */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 12px 0 0;
+}
+
+.tile {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.tile dt {
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.tile dd {
+  margin: 2px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+/* Inputs */
+
+.input-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+fieldset {
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 0;
+}
+
+legend {
+  padding: 0 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.input-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.affix {
+  color: var(--text-2);
+}
+
+input[type='number'] {
+  width: 88px;
+  padding: 5px 6px;
+  font: inherit;
+  text-align: right;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill,
+  .step-card {
+    transition: none;
+  }
+}

@@ -34,21 +34,21 @@ describe('medical accumulator walk', () => {
 
   it('preventive visit costs the patient nothing', () => {
     expect(paid(1)).toBe(0);
-    expect(steps[0].planPaid).toBe(195);
+    expect(steps[0].planPaid).toBe(193.4);
   });
 
   it('reproduces the deductible, coinsurance and MOOP progression', () => {
-    expect(paid(2)).toBe(270);
-    expect(paid(3)).toBe(1420);
-    expect(paid(4)).toBe(1177.5);
-    expect(paid(5)).toBe(3132.5);
+    expect(paid(2)).toBe(289.08);
+    expect(paid(3)).toBe(1517.37);
+    expect(paid(4)).toBe(1094.9);
+    expect(paid(5)).toBe(3098.65);
     expect(paid(6)).toBe(0);
     expect(paid(7)).toBe(0);
     expect(paid(8)).toBe(0);
   });
 
   it('meets the deductible in step 4 and the MOOP in step 5', () => {
-    expect(steps[2].after.deductibleMet).toBe(1690);
+    expect(steps[2].after.deductibleMet).toBe(1806.45);
     expect(steps[3].after.deductibleMet).toBe(2000);
     expect(steps[4].after.oopMet).toBe(6000);
   });
@@ -65,20 +65,20 @@ describe('medical accumulator walk', () => {
 
 describe('contract pricing', () => {
   const facility = SERVICE_LINES.find((l) => l.id === 'cabg-facility')!;
-  const charge = 180000;
+  const charge = 182885.34;
 
   it('prices as a percent of Medicare', () => {
-    expect(allowedAmount(facility, DEFAULT_CONTRACT, charge)).toBe(75000);
+    expect(allowedAmount(facility, DEFAULT_CONTRACT, charge)).toBe(76202.23);
   });
 
   it('prices as a percent of charge', () => {
     const c = { ...DEFAULT_CONTRACT, facility: { method: 'pctCharge' as const, value: 0.5 } };
-    expect(allowedAmount(facility, c, charge)).toBe(90000);
+    expect(allowedAmount(facility, c, charge)).toBe(91442.67);
   });
 
   it('applies the lesser-of-charge clause', () => {
     const c = { ...DEFAULT_CONTRACT, facility: { method: 'caseRate' as const, value: 200000 } };
-    expect(allowedAmount(facility, c, charge)).toBe(180000);
+    expect(allowedAmount(facility, c, charge)).toBe(182885.34);
     expect(allowedAmount(facility, { ...c, lesserOfCharge: false }, charge)).toBe(200000);
   });
 });
@@ -170,10 +170,10 @@ describe('provider margin', () => {
     const cabg = results.find((e) => e.type === 'medical' && e.result.line.id === 'cabg-facility')!;
     if (cabg.type !== 'medical') throw new Error('expected medical');
     const m = providerMargin(cabg.result, DEFAULT_ECONOMICS);
-    expect(m.charge).toBe(180000);
-    expect(m.directCost).toBe(27000);
-    expect(m.indirectCost).toBe(18000);
+    expect(m.charge).toBe(182885.34);
+    expect(m.directCost).toBe(27432.8);
+    expect(m.indirectCost).toBe(18288.54);
     expect(m.contributionMargin).toBeGreaterThan(m.fullMargin);
-    expect(m.fullMargin).toBe(Math.round((m.collected - 45000) * 100) / 100);
+    expect(m.fullMargin).toBe(Math.round((m.collected - 45721.34) * 100) / 100);
   });
 });

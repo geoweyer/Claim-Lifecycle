@@ -23,14 +23,18 @@ export type CostShareRule =
   | 'globalPackage' // inside a surgical global period: no separate payment
   | 'copay';
 
+export type MedicareBasis = 'pfs' | 'anes' | 'asc' | 'opps' | 'ipps' | 'model' | 'global';
+
 export interface ServiceLine {
   id: string;
   stepId: number;
   /** Plain-language description. CPT codes are deliberately not stored. */
   label: string;
   kind: ServiceKind;
-  /** Approximate national Medicare payment for the line (all units). */
+  /** National Medicare payment for the line (all units). */
   medicare: number;
+  /** Source of the Medicare amount. */
+  basis: MedicareBasis;
   costShare: CostShareRule;
   /** Flat copay when costShare is 'copay'. */
   copay?: number;
@@ -115,6 +119,8 @@ export interface AdjudicatedRx {
   /** What the pharmacy is reimbursed (plan price less PBM spread). */
   pharmacyPaid: number;
   pbmSpread: number;
+  /** Portion of the patient's payment applied to the deductible. */
+  deductible: number;
   patientPaid: number;
   planPaid: number;
   rebateTotal: number;

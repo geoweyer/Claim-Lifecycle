@@ -2,6 +2,7 @@ import type {
   Contract,
   EpisodeEvent,
   FundingTerms,
+  MedicareBasis,
   PharmacyTerms,
   PlanDesign,
   ProviderEconomics,
@@ -9,10 +10,21 @@ import type {
   ServiceLine,
 } from '../engine/types';
 
-// ILLUSTRATIVE DEFAULTS. Medicare amounts are approximate national figures that have
-// not yet been checked against the current CMS fee schedule files. Procedure codes are
-// intentionally omitted: CPT codes and descriptions are copyrighted by the American
-// Medical Association, so services are described in plain language only.
+// ILLUSTRATIVE DEFAULTS. Medicare amounts are 2026 national figures with no geographic
+// adjustment; see BASIS for where each comes from. Procedure codes are intentionally
+// omitted: CPT codes and descriptions are copyrighted by the American Medical
+// Association, so services are described in plain language only.
+
+/** Where each Medicare benchmark comes from. */
+export const BASIS: Record<MedicareBasis, string> = {
+  pfs: 'CMS Physician Fee Schedule relative value file, October 2026 release, national, conversion factor $33.4009.',
+  anes: 'CMS 2026 national anesthesia conversion factor ($20.49754) times 38 units (18 base units, assumed, plus five hours of time).',
+  asc: 'CMS ambulatory surgery center payment rates, October 2026 (Addendum AA).',
+  opps: 'CMS hospital outpatient 2026 national rate for the service group, taken from published summaries rather than the CMS rate file.',
+  ipps: 'CMS inpatient final rule, fiscal 2026: operating plus capital standardized amount ($7,276.76) times the relative weight for bypass surgery without catheterization or major complications (4.1888). No wage, teaching or outlier adjustments.',
+  model: 'Modeled bundle of CMS Physician Fee Schedule amounts: two critical care visits, three hospital visits, four chest x-ray readings and an assistant at surgery at 16% of the surgeon fee.',
+  global: 'Included in the 90-day global surgical package; no separate payment.',
+};
 
 export const STEPS: { id: number; title: string; setting: string }[] = [
   { id: 1, title: 'Annual preventive visit', setting: 'Primary care office' },
@@ -28,20 +40,20 @@ export const STEPS: { id: number; title: string; setting: string }[] = [
 const dc = 'deductibleCoinsurance' as const;
 
 export const SERVICE_LINES: ServiceLine[] = [
-  { id: 'pcp-preventive', stepId: 1, label: 'Annual preventive check-up with the primary care physician', kind: 'professional', medicare: 130, costShare: 'preventive' },
-  { id: 'cards-new', stepId: 2, label: 'New-patient cardiologist visit, moderately complex', kind: 'professional', medicare: 165, costShare: dc },
-  { id: 'ekg', stepId: 2, label: 'In-office EKG with interpretation', kind: 'professional', medicare: 15, costShare: dc },
-  { id: 'echo-facility', stepId: 3, label: 'Stress echo, hospital facility fee', kind: 'facility', medicare: 520, costShare: dc },
-  { id: 'echo-pro', stepId: 3, label: "Stress echo, cardiologist's supervision and reading", kind: 'professional', medicare: 80, costShare: dc },
-  { id: 'cath-facility', stepId: 4, label: 'Diagnostic heart catheterization, surgery center facility fee', kind: 'facility', medicare: 1700, costShare: dc },
-  { id: 'cath-pro', stepId: 4, label: "Heart catheterization, cardiologist's fee", kind: 'professional', medicare: 265, costShare: dc },
-  { id: 'cabg-facility', stepId: 5, label: 'Bypass surgery admission, ICU stay included', kind: 'facility', medicare: 30000, costShare: dc },
-  { id: 'cabg-surgeon', stepId: 5, label: "Surgeon's fee, including 90 days of follow-up", kind: 'professional', medicare: 2300, costShare: dc },
-  { id: 'cabg-anesthesia', stepId: 5, label: 'Anesthesia, about five hours', kind: 'professional', medicare: 780, costShare: dc },
-  { id: 'cabg-other-pro', stepId: 5, label: 'Other inpatient physicians (ICU, radiology, assistant)', kind: 'professional', medicare: 1200, costShare: dc },
-  { id: 'rehab', stepId: 6, label: 'Monitored cardiac rehabilitation, 36 sessions', kind: 'facility', medicare: 4500, costShare: dc },
-  { id: 'cards-followup', stepId: 7, label: 'Cardiology follow-up visit', kind: 'professional', medicare: 125, costShare: dc },
-  { id: 'surgeon-postop', stepId: 8, label: "Surgeon's post-operative visit (inside the global period)", kind: 'professional', medicare: 0, costShare: 'globalPackage' },
+  { id: 'pcp-preventive', stepId: 1, label: 'Annual preventive check-up with the primary care physician', kind: 'professional', medicare: 128.93, basis: 'pfs', costShare: 'preventive' },
+  { id: 'cards-new', stepId: 2, label: 'New-patient cardiologist visit, moderately complex', kind: 'professional', medicare: 177.36, basis: 'pfs', costShare: dc },
+  { id: 'ekg', stepId: 2, label: 'In-office EKG with interpretation', kind: 'professional', medicare: 15.36, basis: 'pfs', costShare: dc },
+  { id: 'echo-facility', stepId: 3, label: 'Stress echo, hospital facility fee', kind: 'facility', medicare: 558.25, basis: 'opps', costShare: dc },
+  { id: 'echo-pro', stepId: 3, label: "Stress echo, cardiologist's supervision and reading", kind: 'professional', medicare: 81.16, basis: 'pfs', costShare: dc },
+  { id: 'cath-facility', stepId: 4, label: 'Diagnostic heart catheterization, surgery center facility fee', kind: 'facility', medicare: 1707.76, basis: 'asc', costShare: dc },
+  { id: 'cath-pro', stepId: 4, label: "Heart catheterization, cardiologist's fee", kind: 'professional', medicare: 287.25, basis: 'pfs', costShare: dc },
+  { id: 'cabg-facility', stepId: 5, label: 'Bypass surgery admission, ICU stay included', kind: 'facility', medicare: 30480.89, basis: 'ipps', costShare: dc },
+  { id: 'cabg-surgeon', stepId: 5, label: "Surgeon's fee, including 90 days of follow-up", kind: 'professional', medicare: 2131.65, basis: 'pfs', costShare: dc },
+  { id: 'cabg-anesthesia', stepId: 5, label: 'Anesthesia, about five hours', kind: 'professional', medicare: 778.91, basis: 'anes', costShare: dc },
+  { id: 'cabg-other-pro', stepId: 5, label: 'Other inpatient physicians (ICU, radiology, assistant)', kind: 'professional', medicare: 1093.24, basis: 'model', costShare: dc },
+  { id: 'rehab', stepId: 6, label: 'Monitored cardiac rehabilitation, 36 sessions', kind: 'facility', medicare: 4737.6, basis: 'opps', costShare: dc },
+  { id: 'cards-followup', stepId: 7, label: 'Cardiology follow-up visit', kind: 'professional', medicare: 135.61, basis: 'pfs', costShare: dc },
+  { id: 'surgeon-postop', stepId: 8, label: "Surgeon's post-operative visit (inside the global period)", kind: 'professional', medicare: 0, basis: 'global', costShare: 'globalPackage' },
 ];
 
 const generic = { tier: 1, brand: false, otc: false } as const;
