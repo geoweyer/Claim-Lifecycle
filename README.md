@@ -5,7 +5,7 @@ from a preventive visit to bypass surgery and cardiac rehabilitation.
 
 ## Status
 
-Phases 1 to 4 of 6 are built:
+Phases 1 to 5 of 6 are built:
 
 1. The calculation engine, with tests.
 2. The episode timeline with deductible and out-of-pocket meters, line-by-line step
@@ -21,7 +21,11 @@ Phases 1 to 4 of 6 are built:
    and margin, and what the providers keep. Funding and provider-economics settings
    are editable.
 
-The price lenses and code-set views come in later phases.
+5. Price lenses and languages: the same care priced from the patient's, employer's,
+   health plan's, provider's and Medicare's viewpoints; and a field guide to the code
+   sets and message standards, with the bypass surgery told in each of them.
+
+Still to come: navigation, accessibility review and deployment.
 
 ## Run
 
