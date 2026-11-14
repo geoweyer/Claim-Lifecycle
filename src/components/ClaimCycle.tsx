@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { CAST, CLAIM_META } from '../data/claimMeta';
-import { BASIS, DEFAULT_ECONOMICS, DEFAULT_PHARMACY } from '../data/episode';
+import { BASIS, DEFAULT_PHARMACY } from '../data/episode';
 import { providerMargin } from '../engine/economics';
-import type { Accumulators, AdjudicatedLine, AdjudicatedRx } from '../engine/types';
+import type { Accumulators, AdjudicatedLine, AdjudicatedRx, ProviderEconomics } from '../engine/types';
 import { usd2, type StepView } from '../episodeView';
 import type { Inputs } from '../state';
 import { CycleRing } from './CycleRing';
@@ -53,14 +53,13 @@ interface Stage {
   body: ReactNode;
 }
 
-function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs): Stage[] {
+function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs, econ: ProviderEconomics): Stage[] {
   const meta = CLAIM_META[l.line.id];
   const facility = l.line.kind === 'facility';
   const pct = facility ? inputs.facilityPct : inputs.professionalPct;
   const dedLeft = Math.max(0, inputs.deductible - before.deductibleMet);
   const oopLeft = Math.max(0, inputs.moop - before.oopMet);
   const preventive = l.line.costShare === 'preventive';
-  const econ = DEFAULT_ECONOMICS;
   const m = providerMargin(l, econ);
   const cost = m.directCost + m.indirectCost;
   const dxList = (
@@ -372,7 +371,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs)
               <p className="footnote">
                 The provider may bill only the patient responsibility from the remittance. An in-network provider may
                 not bill the patient for the {usd2(l.contractualAdjustment)} it wrote off. The uncollected share
-                assumes {econ.badDebtRate * 100}% of patient balances go unpaid.
+                assumes {inputs.badDebtPct}% of patient balances go unpaid.
               </p>
             </>
           ) : (
@@ -553,10 +552,11 @@ type Claim = { id: string; label: string; kind: string } & (
 interface Props {
   step: StepView;
   inputs: Inputs;
+  econ: ProviderEconomics;
 }
 
 /** Follows one claim from the selected step around the loop, one stage at a time. */
-export function ClaimCycle({ step, inputs }: Props) {
+export function ClaimCycle({ step, inputs, econ }: Props) {
   const claims: Claim[] = [
     ...step.lines.map((l) => ({
       type: 'medical' as const,
@@ -597,7 +597,7 @@ export function ClaimCycle({ step, inputs }: Props) {
           visits for 90 days, so this visit is recorded for tracking and paid nothing.
         </p>
       );
-    } else stages = medicalStages(claim.result, before, inputs);
+    } else stages = medicalStages(claim.result, before, inputs, econ);
   } else if (claim.result.fill.otc) {
     noCycle = (
       <p>

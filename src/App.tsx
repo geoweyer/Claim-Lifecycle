@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { ClaimCycle } from './components/ClaimCycle';
 import { InputsPanel } from './components/InputsPanel';
 import { Meters } from './components/Meters';
+import { MoneyFlow } from './components/MoneyFlow';
 import { StepDetail } from './components/StepDetail';
 import { Timeline } from './components/Timeline';
 import { buildEpisodeView, usd0 } from './episodeView';
@@ -38,7 +39,7 @@ export default function App() {
       <Timeline view={view} step={step} onStep={setStep} />
       <Meters view={view} step={step} />
       <StepDetail step={view.steps[step - 1]} inputs={inputs} />
-      <ClaimCycle step={view.steps[step - 1]} inputs={inputs} />
+      <ClaimCycle step={view.steps[step - 1]} inputs={inputs} econ={view.econ} />
 
       <section aria-labelledby="totals-heading">
         <h2 id="totals-heading">The whole episode</h2>
@@ -53,6 +54,7 @@ export default function App() {
         </dl>
       </section>
 
+      <MoneyFlow view={view} inputs={inputs} update={update} />
       <InputsPanel inputs={inputs} update={update} reset={reset} />
     </main>
   );

@@ -34,7 +34,7 @@ export function InputsPanel({ inputs, update, reset }: Props) {
     </label>
   );
 
-  const check = (key: 'hdhp' | 'antiplatelet' | 'pcsk9', label: string) => (
+  const check = (key: 'hdhp' | 'antiplatelet' | 'pcsk9' | 'selfFunded', label: string) => (
     <label className="check">
       <input type="checkbox" checked={inputs[key]} onChange={(e) => update({ [key]: e.target.checked })} />
       <span>{label}</span>
@@ -73,6 +73,29 @@ export function InputsPanel({ inputs, update, reset }: Props) {
           {check('hdhp', 'High-deductible plan: prescriptions apply to the deductible')}
           {check('antiplatelet', 'Second antiplatelet prescribed after surgery')}
           {check('pcsk9', 'Brand cholesterol injection added at follow-up')}
+          {check('selfFunded', 'Employer self-funds the plan')}
+        </fieldset>
+        <fieldset>
+          <legend>Employer and funding</legend>
+          {num('employees', 'Covered employees', { step: 50 })}
+          {num('premium', 'Premium or budget per employee, per year', { step: 100, prefix: '$' })}
+          {num('employerSharePct', 'Employer share', { step: 1, max: 100, suffix: '%' })}
+          {num('expectedClaims', 'Expected claims per employee, without this episode', { step: 50, prefix: '$' })}
+          {num('admin', 'Administration per employee', { step: 50, prefix: '$' })}
+        </fieldset>
+        <fieldset>
+          <legend>Stop-loss, when self-funded</legend>
+          {num('attachment', 'Attachment point per member', { step: 5000, prefix: '$' })}
+          {num('stopLossPremium', 'Premium per employee', { step: 50, prefix: '$' })}
+        </fieldset>
+        <fieldset>
+          <legend>Provider economics</legend>
+          {num('chargeFacility', 'Facility charge, multiple of Medicare', { step: 0.5, suffix: '×' })}
+          {num('chargeProfessional', 'Professional charge, multiple of Medicare', { step: 0.5, suffix: '×' })}
+          {num('ccrFacilityPct', 'Facility cost as a share of charge', { step: 1, max: 100, suffix: '%' })}
+          {num('ccrProfessionalPct', 'Professional cost as a share of charge', { step: 1, max: 100, suffix: '%' })}
+          {num('directPct', 'Direct share of cost', { step: 5, max: 100, suffix: '%' })}
+          {num('badDebtPct', 'Patient balances never collected', { step: 1, max: 100, suffix: '%' })}
         </fieldset>
       </div>
     </section>

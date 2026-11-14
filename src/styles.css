@@ -12,6 +12,8 @@
   --patient-ded: #eb6834;
   --patient-coins: #1baf7a;
   --writeoff: #b9b7b0;
+  --employer: #6250d6;
+  --stoploss: #eda100;
   --good: #0a7d0a;
   --warn-bg: #fdf1d3;
   --warn-text: #5a4300;
@@ -32,6 +34,8 @@
     --patient-ded: #d95926;
     --patient-coins: #199e70;
     --writeoff: #6b6a65;
+  --employer: #9085e9;
+  --stoploss: #c98500;
     --good: #0ca30c;
     --warn-bg: #3a2f10;
     --warn-text: #f3dfa6;
@@ -770,4 +774,116 @@ span[title] {
   .ring-token {
     transition: none;
   }
+}
+
+/* Money flow and risk */
+
+.lede {
+  margin: -4px 0 0;
+  max-width: 75ch;
+  color: var(--text-2);
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.segmented button {
+  border: 0;
+  border-radius: 0;
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.fill-employer {
+  background: var(--employer);
+}
+
+.fill-stoploss {
+  background: var(--stoploss);
+}
+
+.risk {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.risk-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+
+.risk-row.active {
+  opacity: 1;
+}
+
+.risk-row.active .risk-name {
+  font-weight: 600;
+}
+
+.track.tall {
+  height: 24px;
+  background: transparent;
+}
+
+.sankey {
+  margin-top: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.flow-hub {
+  margin: 0 0 4px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-2);
+}
+
+.sankey svg {
+  display: block;
+}
+
+.flow-link {
+  fill: var(--text-2);
+  opacity: 0.18;
+  transition: d 0.5s ease;
+}
+
+.flow-link:hover {
+  opacity: 0.32;
+}
+
+.flow-link.highlight {
+  fill: var(--plan);
+  opacity: 0.55;
+}
+
+.flow-node {
+  fill: var(--text-2);
+}
+
+.flow-node.highlight {
+  fill: var(--plan);
+}
+
+.flow-label {
+  fill: var(--text);
+  font-size: 12px;
+}
+
+.flow-value {
+  fill: var(--text-2);
+  font-variant-numeric: tabular-nums;
 }

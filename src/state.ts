@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { DEFAULT_CONTRACT, DEFAULT_PLAN, OPTIONAL_RX_DEFAULT_ON } from './data/episode';
+import {
+  DEFAULT_CONTRACT,
+  DEFAULT_ECONOMICS,
+  DEFAULT_FUNDING,
+  DEFAULT_PLAN,
+  OPTIONAL_RX_DEFAULT_ON,
+} from './data/episode';
 
 /** Everything the visitor can change. Kept flat so it serializes to the URL. */
 export interface Inputs {
@@ -18,6 +24,26 @@ export interface Inputs {
   professionalPct: number;
   antiplatelet: boolean;
   pcsk9: boolean;
+  /** Funding model: false is fully insured, true is self-funded. */
+  selfFunded: boolean;
+  employees: number;
+  /** Annual premium (fully insured) or budgeted cost (self-funded) per employee. */
+  premium: number;
+  employerSharePct: number;
+  /** Expected annual claims per employee, not counting this episode. */
+  expectedClaims: number;
+  admin: number;
+  /** Specific stop-loss attachment point. */
+  attachment: number;
+  stopLossPremium: number;
+  /** Billed charge as a multiple of Medicare. */
+  chargeFacility: number;
+  chargeProfessional: number;
+  /** Cost-to-charge ratios as whole percents. */
+  ccrFacilityPct: number;
+  ccrProfessionalPct: number;
+  directPct: number;
+  badDebtPct: number;
   /** Step the visitor has advanced to (1-8). */
   step: number;
 }
@@ -35,6 +61,20 @@ export const DEFAULT_INPUTS: Inputs = {
   professionalPct: DEFAULT_CONTRACT.professional.value * 100,
   antiplatelet: OPTIONAL_RX_DEFAULT_ON.includes('antiplatelet'),
   pcsk9: OPTIONAL_RX_DEFAULT_ON.includes('pcsk9'),
+  selfFunded: DEFAULT_FUNDING.model === 'selfFunded',
+  employees: DEFAULT_FUNDING.coveredEmployees,
+  premium: DEFAULT_FUNDING.annualPremiumPerEmployee,
+  employerSharePct: DEFAULT_FUNDING.employerShare * 100,
+  expectedClaims: DEFAULT_FUNDING.expectedClaimsPerEmployee,
+  admin: DEFAULT_FUNDING.adminPerEmployee,
+  attachment: DEFAULT_FUNDING.specificAttachment,
+  stopLossPremium: DEFAULT_FUNDING.stopLossPremiumPerEmployee,
+  chargeFacility: DEFAULT_ECONOMICS.chargeMultiple.facility,
+  chargeProfessional: DEFAULT_ECONOMICS.chargeMultiple.professional,
+  ccrFacilityPct: DEFAULT_ECONOMICS.costToCharge.facility * 100,
+  ccrProfessionalPct: DEFAULT_ECONOMICS.costToCharge.professional * 100,
+  directPct: DEFAULT_ECONOMICS.directShare * 100,
+  badDebtPct: DEFAULT_ECONOMICS.badDebtRate * 100,
   step: 1,
 };
 
@@ -61,7 +101,10 @@ export function decodeInputs(hash: string): Inputs {
   }
   const inputs = out as unknown as Inputs;
   inputs.step = Math.min(8, Math.max(1, Math.round(inputs.step)));
-  inputs.coinsurancePct = Math.min(100, inputs.coinsurancePct);
+  for (const k of ['coinsurancePct', 'employerSharePct', 'ccrFacilityPct', 'ccrProfessionalPct', 'directPct', 'badDebtPct'] as const) {
+    inputs[k] = Math.min(100, inputs[k]);
+  }
+  inputs.employees = Math.max(1, Math.round(inputs.employees));
   return inputs;
 }
 

@@ -5,7 +5,7 @@ from a preventive visit to bypass surgery and cardiac rehabilitation.
 
 ## Status
 
-Phases 1 to 3 of 6 are built:
+Phases 1 to 4 of 6 are built:
 
 1. The calculation engine, with tests.
 2. The episode timeline with deductible and out-of-pocket meters, line-by-line step
@@ -16,7 +16,12 @@ Phases 1 to 3 of 6 are built:
    and explanation of benefits, to the patient bill and the provider's margin.
    Pharmacy claims follow their own six-stage path.
 
-The money flow, risk view, price lenses and code-set views come in later phases.
+4. Money and risk: who absorbs the episode's cost under fully insured and self-funded
+   plans, the plan's year as a flow from premium to claims, administration, stop-loss
+   and margin, and what the providers keep. Funding and provider-economics settings
+   are editable.
+
+The price lenses and code-set views come in later phases.
 
 ## Run
 
@@ -39,6 +44,8 @@ The money flow, risk view, price lenses and code-set views come in later phases.
   click-through. The source of each amount is recorded in `src/data/episode.ts`.
 - Commercial prices are those Medicare amounts times the contract percentages, so they
   are illustrative, not observed market prices. Drug prices are rough estimates.
+- Group-level figures (premium, other members' claims, administration, stop-loss) and
+  provider cost ratios are assumptions the visitor can change, not observed data.
 - People, organizations and identifiers on the claims are fictional. Diagnosis codes,
   inpatient procedure codes and the payment group shown on claims are illustrative.
 - Procedure codes are omitted. CPT codes and descriptions are copyrighted by the

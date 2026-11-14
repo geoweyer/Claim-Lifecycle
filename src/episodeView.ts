@@ -1,9 +1,8 @@
 import { adjudicateEpisode, round2 } from './engine/adjudicate';
-import type { Accumulators, AdjudicatedLine, AdjudicatedRx } from './engine/types';
+import type { Accumulators, AdjudicatedLine, AdjudicatedRx, FundingTerms, ProviderEconomics } from './engine/types';
 import {
   buildEvents,
   DEFAULT_CONTRACT,
-  DEFAULT_ECONOMICS,
   DEFAULT_PHARMACY,
   DEFAULT_PLAN,
   STEPS,
@@ -52,6 +51,7 @@ export interface EpisodeView {
   deductible: number;
   moop: number;
   totals: { charge: number; allowed: number; patientPaid: number; planPaid: number };
+  econ: ProviderEconomics;
 }
 
 function phaseOf(s: Omit<StepView, 'phase'>, deductible: number, moop: number): StepPhase {
@@ -83,10 +83,11 @@ export function buildEpisodeView(inputs: Inputs): EpisodeView {
   const enabledOptionalRx = [inputs.antiplatelet && 'antiplatelet', inputs.pcsk9 && 'pcsk9'].filter(
     (x): x is string => Boolean(x),
   );
+  const econ = economicsFrom(inputs);
   const results = adjudicateEpisode(buildEvents(), {
     plan,
     contract,
-    econ: DEFAULT_ECONOMICS,
+    econ,
     pharmacy: DEFAULT_PHARMACY,
     enabledOptionalRx,
   });
@@ -121,12 +122,37 @@ export function buildEpisodeView(inputs: Inputs): EpisodeView {
     steps,
     deductible: plan.deductible,
     moop: plan.moop,
+    econ,
     totals: {
       charge: total((s) => s.charge),
       allowed: total((s) => s.allowed),
       patientPaid: total((s) => s.patientPaid),
       planPaid: total((s) => s.planPaid),
     },
+  };
+}
+
+export function economicsFrom(inputs: Inputs): ProviderEconomics {
+  return {
+    chargeMultiple: { facility: inputs.chargeFacility, professional: inputs.chargeProfessional },
+    costToCharge: { facility: inputs.ccrFacilityPct / 100, professional: inputs.ccrProfessionalPct / 100 },
+    directShare: inputs.directPct / 100,
+    badDebtRate: inputs.badDebtPct / 100,
+  };
+}
+
+/** Funding terms for either model. The loss-ratio floor follows group size: 85% large group, 80% small. */
+export function fundingFrom(inputs: Inputs, selfFunded: boolean): FundingTerms {
+  return {
+    model: selfFunded ? 'selfFunded' : 'fullyInsured',
+    coveredEmployees: inputs.employees,
+    annualPremiumPerEmployee: inputs.premium,
+    employerShare: inputs.employerSharePct / 100,
+    expectedClaimsPerEmployee: inputs.expectedClaims,
+    adminPerEmployee: inputs.admin,
+    mlrFloor: inputs.employees > 50 ? 0.85 : 0.8,
+    specificAttachment: inputs.attachment,
+    stopLossPremiumPerEmployee: inputs.stopLossPremium,
   };
 }
 
