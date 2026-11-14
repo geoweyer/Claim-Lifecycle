@@ -482,3 +482,292 @@ input[type='number'] {
     transition: none;
   }
 }
+
+/* Claim cycle */
+
+h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.claim-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  min-width: 0;
+}
+
+select {
+  max-width: min(460px, 70vw);
+  padding: 6px 8px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.cycle-top {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: 16px 32px;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .cycle-top {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .cycle-side {
+    width: 100%;
+  }
+}
+
+.ring {
+  width: 100%;
+  max-width: 300px;
+}
+
+.ring-path {
+  fill: none;
+  stroke: var(--track);
+  stroke-width: 4;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.ring-token {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  transition: transform 0.6s ease;
+}
+
+.ring-node {
+  cursor: pointer;
+}
+
+.ring-node circle {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.ring-node text {
+  fill: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ring-node.done circle,
+.ring-node.current circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.ring-node.done text,
+.ring-node.current text {
+  fill: var(--on-accent);
+}
+
+.ring-node:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ring-center-small {
+  fill: var(--text-2);
+  font-size: 12px;
+}
+
+.ring-center {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.stage-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 6px;
+}
+
+.stage-list button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.stage-list button.current {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  font-weight: 600;
+}
+
+.stage-list button.current .step-num,
+.stage-list button.done .step-num {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.stage {
+  margin-top: 16px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.stage h3 {
+  margin-top: 16px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--page);
+  min-width: 0;
+}
+
+.cards .card {
+  margin-top: 0;
+}
+
+.stage > .rows {
+  margin-bottom: 12px;
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  margin-bottom: 6px;
+}
+
+.card .badge {
+  background: var(--surface);
+}
+
+.card p {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}
+
+.rows {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.rows > div {
+  display: grid;
+  grid-template-columns: minmax(120px, 2fr) 3fr;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.rows > div:last-child {
+  border-bottom: 0;
+}
+
+.rows dt {
+  color: var(--text-2);
+}
+
+.rows dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.rows + .rows {
+  margin-top: 8px;
+  border-top: 2px solid var(--border);
+}
+
+ul.plain,
+ul.checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.checks {
+  font-size: 0.9rem;
+}
+
+ul.checks li {
+  padding: 4px 0 4px 24px;
+  position: relative;
+}
+
+ul.checks li::before {
+  content: '✓';
+  position: absolute;
+  left: 2px;
+  color: var(--good);
+  font-weight: 700;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--track);
+}
+
+table.mini {
+  margin-top: 10px;
+  font-size: 0.85rem;
+}
+
+table.mini td,
+table.mini th {
+  padding: 5px 0;
+}
+
+table.mini tr.total td {
+  font-weight: 600;
+  border-bottom: 0;
+}
+
+span[title] {
+  text-decoration: underline dotted var(--text-2);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.masked[title] {
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring-progress,
+  .ring-token {
+    transition: none;
+  }
+}

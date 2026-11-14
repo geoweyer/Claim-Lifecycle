@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ClaimCycle } from './components/ClaimCycle';
 import { InputsPanel } from './components/InputsPanel';
 import { Meters } from './components/Meters';
 import { StepDetail } from './components/StepDetail';
@@ -37,6 +38,7 @@ export default function App() {
       <Timeline view={view} step={step} onStep={setStep} />
       <Meters view={view} step={step} />
       <StepDetail step={view.steps[step - 1]} inputs={inputs} />
+      <ClaimCycle step={view.steps[step - 1]} inputs={inputs} />
 
       <section aria-labelledby="totals-heading">
         <h2 id="totals-heading">The whole episode</h2>
