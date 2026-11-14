@@ -129,7 +129,7 @@ export function PriceLenses({ view, inputs, step }: Props) {
   const max = Math.max(...BARS.map((b) => v[b.id]), 1);
 
   return (
-    <section className="lenses" aria-labelledby="lenses-heading">
+    <section id="price" tabIndex={-1} className="lenses" aria-labelledby="lenses-heading">
       <div className="section-head">
         <h2 id="lenses-heading">What does &ldquo;price&rdquo; mean?</h2>
         <div className="segmented" role="group" aria-label="Scope">
@@ -152,7 +152,10 @@ export function PriceLenses({ view, inputs, step }: Props) {
       </div>
 
       <div className="lens-grid">
-        <div className="card" aria-live="polite">
+        <div className="card">
+          <p className="sr-only" role="status">
+            {c.headline}: {usd0(c.value)}
+          </p>
           <h3>{c.headline}</h3>
           <p className="hero">{usd0(c.value)}</p>
           <p>{c.text}</p>

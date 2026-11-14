@@ -128,7 +128,7 @@ export function Languages({ view }: Props) {
   ];
 
   return (
-    <section className="languages" aria-labelledby="languages-heading">
+    <section id="languages" tabIndex={-1} className="languages" aria-labelledby="languages-heading">
       <h2 id="languages-heading">The languages of medicine</h2>
       <p className="lede">
         No one is paid for care as it was spoken in the exam room. Each event is translated, by people and by
@@ -145,7 +145,10 @@ export function Languages({ view }: Props) {
         ))}
       </div>
 
-      <div className="card" aria-live="polite">
+      <p className="sr-only" role="status">
+        {lang.name}: {lang.says}
+      </p>
+      <div className="card">
         <div className="card-head">
           <h3>{lang.name}</h3>
           {lang.locked && <span className="badge">Codes withheld</span>}
@@ -196,7 +199,7 @@ export function Languages({ view }: Props) {
 
       <h3>One operation, told ten ways</h3>
       <p className="muted">The bypass surgery in step 5, as each language records it.</p>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0} role="region" aria-label="The bypass surgery in each language">
         <table className="rosetta">
           <thead>
             <tr>

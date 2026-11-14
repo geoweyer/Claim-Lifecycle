@@ -28,7 +28,7 @@ interface Props {
 export function StepDetail({ step, inputs }: Props) {
   const copays = [inputs.rx1, inputs.rx2, inputs.rx3, inputs.rx4];
   return (
-    <section className="detail" aria-labelledby="detail-heading">
+    <section id="detail" tabIndex={-1} className="detail" aria-labelledby="detail-heading">
       <div className="section-head">
         <h2 id="detail-heading">
           Step {step.id}: {step.title}
@@ -49,7 +49,7 @@ export function StepDetail({ step, inputs }: Props) {
         </li>
       </ul>
 
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0} role="region" aria-label="Services in this step">
         <table>
           <thead>
             <tr>
@@ -102,13 +102,23 @@ export function StepDetail({ step, inputs }: Props) {
         </table>
       </div>
       <p className="footnote">
-        <span className="masked">#####</span> {CODE_NOTICE} Hover a Medicare amount to see its source.
+        <span className="masked">#####</span> {CODE_NOTICE}
       </p>
+      <details className="sources">
+        <summary>Where the Medicare amounts come from</summary>
+        <ul>
+          {step.lines.map((l) => (
+            <li key={l.line.id}>
+              <strong>{l.line.label}:</strong> {BASIS[l.line.basis]}
+            </li>
+          ))}
+        </ul>
+      </details>
 
       {step.fills.length > 0 && (
         <>
           <h3>Prescriptions filled at this step</h3>
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0} role="region" aria-label="Prescriptions in this step">
             <table>
               <thead>
                 <tr>

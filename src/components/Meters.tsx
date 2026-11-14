@@ -16,7 +16,7 @@ export function Meters({ view, step }: Props) {
   const moopDone = view.moop > 0 && acc.oopMet >= view.moop;
 
   return (
-    <section className="meters" aria-labelledby="meters-heading">
+    <section id="standing" tabIndex={-1} className="meters" aria-labelledby="meters-heading">
       <h2 id="meters-heading">Where the patient stands after step {step}</h2>
 
       <div className="meter">

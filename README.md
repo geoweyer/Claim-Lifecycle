@@ -5,7 +5,7 @@ from a preventive visit to bypass surgery and cardiac rehabilitation.
 
 ## Status
 
-Phases 1 to 5 of 6 are built:
+All six planned phases are built. The site is not deployed; run it locally.
 
 1. The calculation engine, with tests.
 2. The episode timeline with deductible and out-of-pocket meters, line-by-line step
@@ -15,17 +15,14 @@ Phases 1 to 5 of 6 are built:
    eligibility check through the claim form, clearinghouse, adjudication, remittance
    and explanation of benefits, to the patient bill and the provider's margin.
    Pharmacy claims follow their own six-stage path.
-
 4. Money and risk: who absorbs the episode's cost under fully insured and self-funded
    plans, the plan's year as a flow from premium to claims, administration, stop-loss
-   and margin, and what the providers keep. Funding and provider-economics settings
-   are editable.
-
-5. Price lenses and languages: the same care priced from the patient's, employer's,
-   health plan's, provider's and Medicare's viewpoints; and a field guide to the code
-   sets and message standards, with the bypass surgery told in each of them.
-
-Still to come: navigation, accessibility review and deployment.
+   and margin, and what the providers keep.
+5. Price lenses and languages: the same care priced from five viewpoints, and a field
+   guide to the code sets and message standards, with the bypass surgery told in each.
+6. Navigation and accessibility: a sticky bar with the step control and section links,
+   a skip link, screen-reader status messages, keyboard-scrollable tables, and a
+   visible list of sources for each Medicare amount.
 
 ## Run
 

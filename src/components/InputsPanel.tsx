@@ -42,13 +42,18 @@ export function InputsPanel({ inputs, update, reset }: Props) {
   );
 
   return (
-    <section className="inputs" aria-labelledby="inputs-heading">
+    <section id="settings" tabIndex={-1} className="inputs" aria-labelledby="inputs-heading">
       <div className="section-head">
         <h2 id="inputs-heading">Change the scenario</h2>
         <button type="button" onClick={reset}>
           Reset to defaults
         </button>
       </div>
+      {inputs.deductible > inputs.moop && (
+        <p className="notice" role="status">
+          The deductible is higher than the out-of-pocket maximum, so the patient stops paying at the maximum.
+        </p>
+      )}
       <div className="input-groups">
         <fieldset>
           <legend>Plan design</legend>

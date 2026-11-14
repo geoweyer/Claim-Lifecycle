@@ -8,23 +8,9 @@ interface Props {
 
 /** The episode rail: one card per encounter, revealed as the visitor advances. */
 export function Timeline({ view, step, onStep }: Props) {
-  const last = view.steps.length;
   return (
-    <section aria-labelledby="timeline-heading">
-      <div className="section-head">
-        <h2 id="timeline-heading">The episode</h2>
-        <div className="stepper">
-          <button type="button" onClick={() => onStep(step - 1)} disabled={step <= 1}>
-            Back
-          </button>
-          <span aria-live="polite">
-            Step {step} of {last}
-          </span>
-          <button type="button" className="primary" onClick={() => onStep(step + 1)} disabled={step >= last}>
-            Next step
-          </button>
-        </div>
-      </div>
+    <section id="episode" tabIndex={-1} aria-labelledby="timeline-heading">
+      <h2 id="timeline-heading" className="solo">The episode</h2>
       <ol className="timeline">
         {view.steps.map((s) => {
           const state = s.id === step ? 'current' : s.id < step ? 'done' : 'future';

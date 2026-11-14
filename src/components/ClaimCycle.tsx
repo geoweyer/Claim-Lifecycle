@@ -611,7 +611,7 @@ export function ClaimCycle({ step, inputs, econ }: Props) {
   const s = stages[current];
 
   return (
-    <section className="cycle" aria-labelledby="cycle-heading">
+    <section id="claim" tabIndex={-1} className="cycle" aria-labelledby="cycle-heading">
       <div className="section-head">
         <h2 id="cycle-heading">Follow one claim</h2>
         <label className="claim-pick">
@@ -671,7 +671,10 @@ export function ClaimCycle({ step, inputs, econ }: Props) {
             </div>
           </div>
 
-          <div className="stage" aria-live="polite">
+          <p className="sr-only" role="status">
+            Stage {current + 1} of {stages.length}: {s.label}
+          </p>
+          <div className="stage">
             <h3>
               {current + 1}. {s.label}
             </h3>

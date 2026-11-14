@@ -108,7 +108,7 @@ export function MoneyFlow({ view, inputs, update }: Props) {
   const rebateSponsor = round2(fills.reduce((t, r) => t + r.rebateToSponsor, 0));
 
   return (
-    <section className="money" aria-labelledby="money-heading">
+    <section id="money" tabIndex={-1} className="money" aria-labelledby="money-heading">
       <div className="section-head">
         <h2 id="money-heading">Who pays for the plan, and who is at risk</h2>
         <div className="segmented" role="group" aria-label="Funding model">
@@ -161,7 +161,7 @@ export function MoneyFlow({ view, inputs, update }: Props) {
           </div>
         ))}
       </div>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0} role="region" aria-label="Who absorbs the episode cost, by funding model">
         <table>
           <thead>
             <tr>
@@ -196,7 +196,7 @@ export function MoneyFlow({ view, inputs, update }: Props) {
           <div className="tile" key={label}>
             <dt>{label}</dt>
             <dd>{value}</dd>
-            <p>{hint}</p>
+            <dd className="hint">{hint}</dd>
           </div>
         ))}
       </dl>
@@ -213,7 +213,7 @@ export function MoneyFlow({ view, inputs, update }: Props) {
       </p>
 
       <h3>What the providers keep from this episode</h3>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0} role="region" aria-label="Provider margins for this episode">
         <table>
           <thead>
             <tr>
