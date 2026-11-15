@@ -5,7 +5,10 @@ from a preventive visit to bypass surgery and cardiac rehabilitation.
 
 ## Status
 
-All six planned phases are built. The site is not deployed; run it locally.
+All six planned phases are built, plus a home page and tabbed navigation. The home
+page gives a narrative introduction and a drawing of the system in six parts; each part
+pulls apart into its layers and links to the tab with the full detail. The site name
+leads home from any tab.
 
 1. The calculation engine, with tests.
 2. The episode timeline with deductible and out-of-pocket meters, line-by-line step

@@ -244,7 +244,7 @@ export function MoneyFlow({ view, inputs, update }: Props) {
         </table>
       </div>
       <p className="footnote">
-        Provider cost is modeled from the cost-to-charge ratios in the settings below, so these margins are
+        Provider cost is modeled from the cost-to-charge ratios in Settings, so these margins are
         illustrations, not findings.
         {rebate > 0 &&
           ` Drug maker rebates on this episode: ${usd0(rebate)}, of which ${usd0(rebateSponsor)} goes to the plan sponsor and the rest stays with the pharmacy benefit manager.`}

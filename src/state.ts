@@ -108,21 +108,61 @@ export function decodeInputs(hash: string): Inputs {
   return inputs;
 }
 
-/** Inputs held in React state and mirrored to the URL hash so a scenario can be shared. */
-export function useInputs(): [Inputs, (patch: Partial<Inputs>) => void, () => void] {
+export const TABS = [
+  { id: 'home', label: 'Home' },
+  { id: 'episode', label: 'The episode' },
+  { id: 'claim', label: 'Follow a claim' },
+  { id: 'price', label: 'Price' },
+  { id: 'money', label: 'Money and risk' },
+  { id: 'languages', label: 'Languages' },
+  { id: 'assumptions', label: 'Settings' },
+] as const;
+
+export type TabId = (typeof TABS)[number]['id'];
+
+const isTab = (v: string | null): v is TabId => TABS.some((t) => t.id === v);
+
+/** The tab named in the address: either a bare "#episode" or a "view=episode" parameter. */
+export function decodeTab(hash: string): TabId {
+  const raw = hash.replace(/^#/, '');
+  if (isTab(raw)) return raw;
+  const view = new URLSearchParams(raw).get('view');
+  return isTab(view) ? view : 'home';
+}
+
+/** A bare tab name when the scenario is the default; otherwise the tab plus the changed settings. */
+export function encodeLocation(tab: TabId, inputs: Inputs): string {
+  const settings = encodeInputs(inputs);
+  if (!settings) return tab === 'home' ? '' : tab;
+  return tab === 'home' ? settings : `view=${tab}&${settings}`;
+}
+
+/** Inputs and the open tab, held in React state and mirrored to the URL hash so a view can be shared. */
+export function useInputs() {
   const [inputs, setInputs] = useState<Inputs>(() => decodeInputs(window.location.hash));
+  const [tab, setTab] = useState<TabId>(() => decodeTab(window.location.hash));
 
   useEffect(() => {
-    const encoded = encodeInputs(inputs);
+    const encoded = encodeLocation(tab, inputs);
     const url = window.location.pathname + window.location.search + (encoded ? `#${encoded}` : '');
     try {
       window.history.replaceState(null, '', url);
     } catch {
       // Some embedded viewers do not allow the address to change; the scenario still works in the page.
     }
-  }, [inputs]);
+  }, [inputs, tab]);
+
+  // Follow the address when it changes from outside, such as a pasted link or the Back button.
+  useEffect(() => {
+    const onHash = () => {
+      setTab(decodeTab(window.location.hash));
+      setInputs(decodeInputs(window.location.hash));
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   const update = (patch: Partial<Inputs>) => setInputs((prev) => ({ ...prev, ...patch }));
-  const reset = () => setInputs(DEFAULT_INPUTS);
-  return [inputs, update, reset];
+  const reset = () => setInputs((prev) => ({ ...DEFAULT_INPUTS, step: prev.step }));
+  return { inputs, update, reset, tab, setTab };
 }
