@@ -13,8 +13,8 @@ interface Props {
 const BEARERS: { key: keyof RiskAllocation; label: string; cls: string }[] = [
   { key: 'patient', label: 'Patient', cls: 'fill-ded' },
   { key: 'employer', label: 'Employer', cls: 'fill-employer' },
-  { key: 'stopLossCarrier', label: 'Stop-loss insurer', cls: 'fill-stoploss' },
-  { key: 'carrier', label: 'Health insurer', cls: 'fill-plan' },
+  { key: 'stopLossCarrier', label: 'Stop-loss carrier', cls: 'fill-stoploss' },
+  { key: 'carrier', label: 'Carrier', cls: 'fill-plan' },
 ];
 
 const pctText = (n: number) => `${(n * 100).toFixed(1)}%`;
@@ -47,26 +47,26 @@ export function MoneyFlow({ view, inputs, update }: Props) {
     sources = [
       { label: 'Employer premium', short: 'Employer', value: f.employerContribution },
       { label: 'Employee premium', short: 'Employees', value: f.employeeContribution },
-      { label: 'Insurer covers loss', short: 'Insurer loss', value: Math.max(0, -f.margin) },
+      { label: 'Carrier underwriting loss', short: 'Carrier loss', value: Math.max(0, -f.margin) },
     ];
     uses = [
       { label: 'Other members’ claims', short: 'Other claims', value: otherClaims },
       { label: 'This episode', value: planPaid, highlight: true },
       { label: 'Administration', value: f.admin },
-      { label: 'Loss-ratio rebate', short: 'Rebate', value: f.mlrRebate },
-      { label: 'Insurer margin', value: Math.max(0, f.margin) },
+      { label: 'MLR rebate', short: 'MLR rebate', value: f.mlrRebate },
+      { label: 'Carrier margin', value: Math.max(0, f.margin) },
     ];
   } else {
     const employerPays = Math.max(0, f.employerContribution);
     sources = [
       { label: 'Employer funding', short: 'Employer', value: employerPays },
       { label: 'Employee contributions', short: 'Employees', value: f.employeeContribution },
-      { label: 'Stop-loss payout', value: f.stopLossRecovery },
+      { label: 'Stop-loss reimbursement', short: 'Stop-loss paid', value: f.stopLossRecovery },
     ];
     uses = [
       { label: 'Other members’ claims', short: 'Other claims', value: otherClaims },
       { label: 'This episode', value: planPaid, highlight: true },
-      { label: 'Administrator fees', short: 'Admin fees', value: f.admin },
+      { label: 'ASO fees', short: 'ASO fees', value: f.admin },
       { label: 'Stop-loss premium', short: 'Stop-loss cost', value: f.stopLossPremium },
       { label: 'Left with employer', short: 'Employer keeps', value: Math.max(0, -f.employerContribution) },
     ];
@@ -82,8 +82,8 @@ export function MoneyFlow({ view, inputs, update }: Props) {
     : [
         ['Employer cost this year', usd0(f.employerNetCost), 'Its share of the premium, fixed for the year'],
         ['Added by this episode', usd0(employerDelta), 'Nothing this year; it may raise next year’s renewal'],
-        ['Medical loss ratio', pctText(f.medicalLossRatio ?? 0), `Claims as a share of premium. Minimum ${pctText(fundingFrom(inputs, false).mlrFloor)}; any shortfall is refunded`],
-        ['Insurer margin', usd0(f.margin), 'Premium less claims, administration and rebate'],
+        ['Medical loss ratio (MLR)', pctText(f.medicalLossRatio ?? 0), `Claims as a share of premium. Minimum ${pctText(fundingFrom(inputs, false).mlrFloor)}; any shortfall is refunded`],
+        ['Carrier margin', usd0(f.margin), 'Premium less claims, administration and any MLR rebate'],
       ];
 
   // Provider side of the episode, by claim type.
@@ -126,8 +126,8 @@ export function MoneyFlow({ view, inputs, update }: Props) {
       </div>
       <p className="lede">
         {inputs.selfFunded
-          ? 'Self-funded: the employer pays claims from its own money and hires an administrator to process them. It buys stop-loss insurance to cap what one very sick member can cost.'
-          : 'Fully insured: the employer and employees pay a fixed premium. The insurer pays the claims and keeps or loses the difference.'}
+          ? 'Self-funded. The employer pays claims from its own funds and pays a carrier or TPA an ASO fee to administer them. Specific stop-loss caps its exposure on any one member.'
+          : 'Fully insured. The employer and employees pay a fixed premium and the carrier takes the claims risk. A bad year is the carrier\u2019s loss, at least until renewal.'}
       </p>
 
       <h3>Who absorbs the {usd0(episode)} this episode cost</h3>
@@ -247,7 +247,7 @@ export function MoneyFlow({ view, inputs, update }: Props) {
         Provider cost is modeled from the cost-to-charge ratios in Settings, so these margins are
         illustrations, not findings.
         {rebate > 0 &&
-          ` Drug maker rebates on this episode: ${usd0(rebate)}, of which ${usd0(rebateSponsor)} goes to the plan sponsor and the rest stays with the pharmacy benefit manager.`}
+          ` Manufacturer rebates on this episode: ${usd0(rebate)}, of which ${usd0(rebateSponsor)} goes to the plan sponsor and the PBM keeps the rest.`}
       </p>
     </section>
   );

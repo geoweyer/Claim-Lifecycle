@@ -10,7 +10,7 @@ export const CAST = {
   payer: 'Harbor Mutual Health Plan',
   plan: 'Harbor Mutual PPO 2000',
   clearinghouses: 'Change Healthcare (part of Optum), Availity or Waystar',
-  pbm: 'the plan’s pharmacy benefit manager',
+  pbm: 'the plan’s PBM',
   note: 'The patient, employer, health plan and providers are fictional.',
 };
 

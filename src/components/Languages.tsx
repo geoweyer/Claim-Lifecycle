@@ -55,7 +55,7 @@ export function Languages({ view }: Props) {
     {
       lang: 'HCPCS Level II',
       reader: 'Suppliers and outpatient billers',
-      telling: 'Silent. Inside an admission, supplies, implants and drugs are not billed one by one.',
+      telling: 'Silent. Supplies, implants and drugs used during an admission are packaged into the DRG.',
     },
     {
       lang: 'MS-DRG',
@@ -70,7 +70,7 @@ export function Languages({ view }: Props) {
     {
       lang: 'APC',
       reader: 'Outpatient payment systems',
-      telling: 'Silent. It speaks before and after: the stress echo, the catheterization, the rehabilitation sessions.',
+      telling: 'Silent. APCs apply before and after the admission: the stress echo, the cath, the rehab sessions.',
     },
     {
       lang: 'ASC X12 EDI',
@@ -99,13 +99,13 @@ export function Languages({ view }: Props) {
     },
     {
       lang: 'NCPDP',
-      reader: 'The pharmacy and the benefit manager',
-      telling: 'Silent in the operating room. It speaks at discharge, when the prescriptions are filled.',
+      reader: 'The pharmacy and the PBM',
+      telling: 'Silent in the OR. It starts at discharge, when the prescriptions are filled.',
     },
     {
       lang: 'NDC',
       reader: 'The pharmacy supply chain',
-      telling: 'Inside the hospital, each drug has one but none is billed. On the discharge prescriptions, each is the product being priced.',
+      telling: 'Every drug given in the hospital has one, and none is billed. On the discharge prescriptions the NDC is the thing being priced.',
     },
     {
       lang: 'LOINC',
@@ -119,10 +119,11 @@ export function Languages({ view }: Props) {
   ];
 
   const fields: [string, string][] = [
-    ['Keeper', lang.keeper],
-    ['Spoken by', lang.speakers],
-    ['Grammar', lang.grammar],
-    ['How it moves money', lang.role],
+    ['Maintained by', lang.keeper],
+    ['Where it came from', lang.origin],
+    ['Used by', lang.speakers],
+    ['Structure', lang.grammar],
+    ['Role in payment', lang.role],
     ['In this episode', lang.inEpisode],
     ['Rights', lang.rights],
   ];
@@ -131,9 +132,9 @@ export function Languages({ view }: Props) {
     <section id="languages" tabIndex={-1} className="languages" aria-labelledby="languages-heading">
       <h2 id="languages-heading">The languages of medicine</h2>
       <p className="lede">
-        No one is paid for care as it was spoken in the exam room. Each event is translated, by people and by
-        software, into a handful of formal languages. Each has a keeper, a grammar and native speakers, and each
-        says one kind of thing.
+        A clinician&apos;s note cannot be paid. Before money moves, the encounter is restated in a handful of formal
+        vocabularies, most of them built for some other purpose and adopted for billing later. Who maintains each one,
+        and who has to license it, explains a good deal about how the system behaves.
       </p>
 
       <div className="chips" role="group" aria-label="Choose a language">

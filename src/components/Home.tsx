@@ -1,6 +1,7 @@
 import { SITE_NAME } from '../site';
 import { usd0, type EpisodeView } from '../episodeView';
 import { TABS, type TabId } from '../state';
+import { HISTORY } from '../data/anatomy';
 import { ExplodedView } from './ExplodedView';
 
 interface Props {
@@ -9,12 +10,12 @@ interface Props {
 }
 
 const GUIDE: Record<Exclude<TabId, 'home'>, string> = {
-  episode: 'Eight encounters in order, with the deductible and out-of-pocket maximum filling as you go.',
-  claim: 'Pick any claim and follow it stage by stage, from the eligibility check to the provider’s margin.',
-  price: 'The same care priced by the patient, the employer, the health plan, the provider and Medicare.',
-  money: 'Who funds the plan, where the money goes, and who absorbs a $100,000 year.',
-  languages: 'The code sets and message formats that carry a visit through the system.',
-  assumptions: 'Change the plan, the contracts, the funding and the provider costs, and watch everything re-flow.',
+  episode: 'Eight encounters in sequence. Billed, allowed and paid amounts for every line, with the accumulators running.',
+  claim: 'One claim at a time: 270/271, the claim form, the clearinghouse, adjudication, the 835 and the EOB.',
+  price: 'Charge, allowed amount, plan paid, patient responsibility, cost and the Medicare rate, side by side.',
+  money: 'Fully insured against self-funded. Where premium goes, and who absorbs a $100,000 claimant.',
+  languages: 'ICD-10, CPT, HCPCS, DRGs, APCs, X12, NCPDP, NDC and LOINC: who keeps each one and what it is for.',
+  assumptions: 'Benefit design, contract rates, funding terms and provider cost ratios. Every figure on the site follows from these.',
 };
 
 /** The front page: what this is, the system as a drawing, and where to go next. */
@@ -25,52 +26,58 @@ export function Home({ view, onOpen }: Props) {
   return (
     <>
       <header className="home-hero">
-        <p className="eyebrow">A commercial health plan, one patient, one year</p>
+        <p className="eyebrow">Commercial coverage · one patient · one plan year</p>
         <h1>{SITE_NAME}</h1>
         <p className="hero-lede">
-          A visit to the doctor lasts twenty minutes. The paperwork it sets off lasts months, passes through a dozen
-          organizations, and is written in languages most patients never see. This site follows the money through all
-          of it.
+          One cardiac patient generates {claims} medical claims and {usd0(view.totals.charge)} in billed charges in a
+          single plan year. The contracts allow {usd0(view.totals.allowed)} of it. This site follows each claim from
+          the eligibility check to the remittance, and shows why the patient, the employer, the payer and the hospital
+          each report a different price for the same care.
         </p>
         <div className="hero-actions">
           <button type="button" className="primary" onClick={() => onOpen('episode')}>
-            Start the walk-through
+            Start with the episode
           </button>
           <button type="button" onClick={() => document.getElementById('anatomy')?.scrollIntoView({ block: 'start' })}>
-            See how the system fits together
+            See the system taken apart
           </button>
         </div>
       </header>
 
       <section aria-labelledby="story-heading">
-        <h2 id="story-heading">How a visit becomes a payment</h2>
+        <h2 id="story-heading">How we got here</h2>
         <div className="story">
           <p>
-            It starts before anyone is sick. An employer and its workers put money into a plan, and a contract sets
-            out what the plan will pay and what the patient must pay first. That contract is the reason a price exists
-            at all.
+            Nobody designed the way Americans pay for medical care. The arrangement was assembled over a century from
+            answers to narrower questions: how a Dallas hospital could collect from schoolteachers, how wartime
+            employers could hire under wage controls, what it would take to get physicians to accept Medicare. Each
+            answer outlived its question. A claim filed today still passes through all of them.
           </p>
+        </div>
+        <ol className="history">
+          {HISTORY.map((h) => (
+            <li key={h.year}>
+              <span className="history-year">{h.year}</span>
+              <div>
+                <h3>{h.title}</h3>
+                <p>{h.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="story">
           <p>
-            Then someone needs care. What happens in the exam room is spoken and written in ordinary clinical
-            language. None of it can be paid for in that form, so it is translated: the reason for the visit into one
-            set of codes, the work done into another, the hospital stay into a third.
-          </p>
-          <p>
-            The coded visit is packed into a claim, checked by a middleman, and delivered to the health plan. The plan
-            does not pay what was billed. It looks up the rate it negotiated, works out how much of that rate falls to
-            the patient, and pays the rest.
-          </p>
-          <p>
-            Each party then hears the result in its own terms. The provider sees a payment and a write-off. The patient
-            sees what they owe. The employer sees a premium, or a claim against its own funds. Each of them will tell
-            you a different number when asked what the care cost, and each of them will be right.
+            The result has a recognizable logic once the layers are separated. Providers bill charges that few payers
+            pay. Payers reprice each claim to a contract that is usually pegged to Medicare. The benefit design then
+            splits the allowed amount between the plan and the member, and the funding arrangement decides whose money
+            the plan&apos;s share really is. The rest of this site works through one case in that order.
           </p>
         </div>
       </section>
 
       <section id="anatomy" tabIndex={-1} aria-labelledby="anatomy-heading">
         <h2 id="anatomy-heading">The system, taken apart</h2>
-        <p className="lede">Six parts, in the order money and information pass through them. Each one opens into its layers.</p>
+        <p className="lede">Six parts, in the order a claim meets them. Select one to separate it into its steps.</p>
         <ExplodedView onOpen={onOpen} />
       </section>
 
@@ -78,10 +85,10 @@ export function Home({ view, onOpen }: Props) {
         <h2 id="patient-heading">The case this site follows</h2>
         <div className="case">
           <p>
-            A routine check-up turns up a concern. The patient is sent to a cardiologist, then for a stress test, then
-            a heart catheterization, and finally bypass surgery, followed by weeks of cardiac rehabilitation. Along
-            the way the patient moves from free preventive care, through the deductible and coinsurance, to the
-            out-of-pocket maximum.
+            An annual preventive visit ends in a cardiology referral. The cardiologist orders a stress echo at the
+            hospital. A diagnostic cath at a surgery center follows, then a three-vessel CABG with an ICU stay, and
+            36 sessions of cardiac rehab. The member starts the year with a $0 preventive visit, works through the
+            deductible, pays coinsurance, and reaches the out-of-pocket maximum during the surgical admission.
           </p>
           <dl className="tiles">
             <div className="tile">
@@ -108,8 +115,9 @@ export function Home({ view, onOpen }: Props) {
             </div>
           </dl>
           <p className="notice">
-            Prices are illustrative. Medicare amounts are 2026 national rates; commercial prices are those rates times
-            contract percentages you can change in Settings. The patient and organizations are fictional.
+            Prices are illustrative. Medicare amounts are 2026 national rates with no geographic adjustment.
+            Commercial allowed amounts are those rates times contract percentages that can be changed in Settings. The
+            patient and organizations are fictional.
           </p>
         </div>
       </section>

@@ -165,7 +165,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
     ['Billed charge', usd2(l.charge)],
     ['Medicare benchmark', <span title={BASIS[l.line.basis]}>{usd2(l.line.medicare)}</span>],
     [`Contract rate (${pct}% of Medicare)`, usd2(l.allowed)],
-    ['Written off by the provider', usd2(l.contractualAdjustment)],
+    ['Contractual adjustment', usd2(l.contractualAdjustment)],
   ];
   const share: [string, ReactNode][] = preventive
     ? [['Cost share', 'None. Preventive services are covered in full under the Affordable Care Act.']]
@@ -178,7 +178,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
 
   return [
     {
-      label: 'Eligibility check',
+      label: 'Eligibility and benefits',
       who: `${meta.provider} asks ${CAST.payer}`,
       standard: 'X12 270 request, 271 response' + (meta.priorAuth ? ', 278 authorization' : ''),
       when: 'Before or at check-in, answered in seconds',
@@ -211,7 +211,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
       ),
     },
     {
-      label: 'Care and charges',
+      label: 'Coding and charge capture',
       who: `${meta.provider}: clinicians, coders and the billing office`,
       standard: 'ICD-10-CM diagnoses, procedure codes, the chargemaster',
       when: 'Day of service, coded within days',
@@ -230,7 +230,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
           <Card title="Charge and cost">
             <Rows
               rows={[
-                ['Charge from the price list', usd2(l.charge)],
+                ['Charge from the chargemaster', usd2(l.charge)],
                 ['Charge as a multiple of Medicare', `${econ.chargeMultiple[l.line.kind]} times`],
                 ['Estimated cost to deliver', usd2(cost)],
                 ['Direct cost (staff, supplies, implants)', usd2(m.directCost)],
@@ -238,8 +238,8 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
               ]}
             />
             <p className="footnote">
-              Cost is modeled from a cost-to-charge ratio of {econ.costToCharge[l.line.kind]}. The charge is a list
-              price that almost no one pays.
+              Cost is modeled from a cost-to-charge ratio of {econ.costToCharge[l.line.kind]}. Few payers pay the
+              charge. It still matters, because percent-of-charge contracts, outlier payments and self-pay bills start from it.
             </p>
           </Card>
         </div>
@@ -269,14 +269,17 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
               <li>Routed to {CAST.payer}</li>
             </ul>
           </Card>
-          <Card title="Why it matters">
+          <Card title="Rejected is not denied">
             <p>
-              A claim that fails these checks is <strong>rejected</strong>: it never reaches the payer and can be fixed
-              and resent. A <strong>denial</strong> comes later, from the payer, after it has judged the claim.
+              A claim that fails these edits is <strong>rejected</strong>. It never enters the payer&apos;s adjudication
+              system, so there is nothing to appeal. It is corrected and resubmitted while the timely filing clock
+              keeps running. A <strong>denial</strong> comes later, from the payer, on a claim it accepted.
             </p>
             <p>
-              One clearinghouse connects a provider to thousands of payers. When Change Healthcare was taken offline by
-              a cyberattack in February 2024, claims and payments stalled across the country for weeks.
+              Clearinghouses exist because every payer once had its own format and its own connection. HIPAA
+              standardized the transactions. The companion guides and payer-specific edits stayed. Change Healthcare,
+              owned by Optum since 2022, was handling billions of transactions a year when ransomware took it offline
+              in February 2024, and many practices had no second route to their payers.
             </p>
           </Card>
         </div>
@@ -312,13 +315,13 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
       ),
     },
     {
-      label: 'Remittance and EOB',
+      label: 'ERA and EOB',
       who: `${CAST.payer} tells the provider and the patient`,
       standard: 'X12 835 to the provider, explanation of benefits to the patient',
       when: 'With the payment, typically two to four weeks after the claim',
       body: (
         <div className="cards">
-          <Card title="What the provider sees" tag="835 remittance">
+          <Card title="What the provider sees" tag="ERA (835)">
             <Rows
               rows={[
                 ['Billed', usd2(l.charge)],
@@ -354,7 +357,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
       ),
     },
     {
-      label: 'Patient bill',
+      label: 'Patient statement',
       who: `${meta.provider} bills ${CAST.patient}`,
       standard: 'Patient statement',
       when: 'After the remittance, often 30 to 60 days after care',
@@ -381,7 +384,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
       ),
     },
     {
-      label: 'Payment and margin',
+      label: 'Posting and margin',
       who: `${meta.provider}'s finance team`,
       standard: 'Payment posting, cost accounting',
       when: 'When the money arrives',
@@ -389,7 +392,7 @@ function medicalStages(l: AdjudicatedLine, before: Accumulators, inputs: Inputs,
         <Card title="What the provider keeps">
           <Rows
             rows={[
-              ['Paid by the plan', usd2(l.planPaid)],
+              ['Plan paid', usd2(l.planPaid)],
               ['Collected from the patient', usd2(l.patientPaid - m.badDebt)],
               ['Total collected', usd2(m.collected)],
               ['Direct cost', minus(m.directCost)],
@@ -440,7 +443,7 @@ function rxStages(r: AdjudicatedRx, before: Accumulators, inputs: Inputs): Stage
         <Card title="Claim sent from the pharmacy computer" tag="Stylized">
           <Rows
             rows={[
-              ['Routing numbers (BIN, PCN, group)', 'From the member ID card; they say which benefit manager to send to'],
+              ['Routing numbers (BIN, PCN, group)', 'From the member ID card. They identify the PBM and the plan.'],
               ['Cardholder ID', CAST.memberId],
               ['Product (NDC)', '00000-0000-00, the 11-digit code for the exact drug, strength and package'],
               ['Quantity and days supply', '30 tablets, 30 days'],
@@ -469,8 +472,8 @@ function rxStages(r: AdjudicatedRx, before: Accumulators, inputs: Inputs): Stage
       ),
     },
     {
-      label: 'Benefit manager decides',
-      who: 'The plan\u2019s pharmacy benefit manager',
+      label: 'PBM adjudication',
+      who: 'The plan\u2019s PBM',
       standard: 'Formulary, pharmacy network contract, accumulators',
       when: 'A few seconds',
       body: (
@@ -498,7 +501,7 @@ function rxStages(r: AdjudicatedRx, before: Accumulators, inputs: Inputs): Stage
       ),
     },
     {
-      label: 'At the counter',
+      label: 'Point of sale',
       who: `The pharmacy and ${CAST.patient}`,
       standard: 'Paid response on the pharmacy screen',
       when: 'Before the patient leaves',
@@ -519,7 +522,7 @@ function rxStages(r: AdjudicatedRx, before: Accumulators, inputs: Inputs): Stage
     },
     {
       label: 'Settlement and rebates',
-      who: 'The pharmacy benefit manager, the pharmacy, the plan sponsor and the drug maker',
+      who: 'The PBM, the pharmacy, the plan sponsor and the manufacturer',
       standard: 'Payment cycles and rebate contracts',
       when: 'Pharmacy paid in weeks; rebates settle months later',
       body: (
@@ -527,16 +530,16 @@ function rxStages(r: AdjudicatedRx, before: Accumulators, inputs: Inputs): Stage
           <Rows
             rows={[
               ['Pharmacy receives in total', usd2(r.pharmacyPaid)],
-              ['Kept by the benefit manager as spread', usd2(r.pbmSpread)],
+              ['PBM spread', usd2(r.pbmSpread)],
               ['Manufacturer rebate', usd2(r.rebateTotal)],
               ['Rebate passed to the plan sponsor', usd2(r.rebateToSponsor)],
-              ['Rebate kept by the benefit manager', usd2(r.rebateKeptByPbm)],
+              ['Rebate retained by the PBM', usd2(r.rebateKeptByPbm)],
             ]}
           />
           <p className="footnote">
             {r.fill.brand
               ? 'Rebates are paid on brand drugs and never reach the patient at the counter.'
-              : 'Generic drugs carry no manufacturer rebate. The benefit manager earns its margin on spread and fees.'}
+              : 'Generic drugs carry no manufacturer rebate. The PBM earns its margin on spread and fees.'}
           </p>
         </Card>
       ),

@@ -15,12 +15,12 @@ import { TABS, useInputs, type TabId } from './state';
 import './styles.css';
 
 const INTRO: Record<Exclude<TabId, 'home'>, string> = {
-  episode: 'One patient, from a preventive visit to bypass surgery and recovery. Step through to see what is billed, what is allowed, and who pays.',
-  claim: 'Choose a claim from the current step and follow it from the eligibility check to the provider’s margin.',
-  price: 'The same care has a different price depending on who is asked.',
-  money: 'How the plan is funded for the year, and who absorbs the cost of this episode.',
-  languages: 'The code sets and message standards that carry a clinical event through the payment system.',
-  assumptions: 'Every number on this site follows from these settings. Change one and the whole episode re-flows.',
+  episode: 'Eight encounters, from an annual preventive visit to cardiac rehab. Each step shows billed charges, the allowed amount, and how the allowed amount splits between plan and member.',
+  claim: 'Pick a claim from the current step. The stages run from eligibility verification to payment posting, with the claim form, the 835 and the EOB along the way.',
+  price: 'Ask five parties what this care cost and five different figures come back. Each one is correct for the party quoting it.',
+  money: 'Premium in, claims and administration out. The funding arrangement decides who is left holding a large claim.',
+  languages: 'A claim is written in several code sets at once, wrapped in a transaction standard. Each has an owner, a history and a job.',
+  assumptions: 'These inputs drive every figure on the site. Change one and the episode is re-adjudicated.',
 };
 
 export default function App() {

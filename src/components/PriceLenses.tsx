@@ -10,7 +10,7 @@ type BarId = 'charge' | 'allowed' | 'medicare' | 'cost' | 'planPaid' | 'patientP
 const LENSES: { id: LensId; label: string }[] = [
   { id: 'patient', label: 'Patient' },
   { id: 'employer', label: 'Employer' },
-  { id: 'plan', label: 'Health plan' },
+  { id: 'plan', label: 'Payer' },
   { id: 'provider', label: 'Provider' },
   { id: 'medicare', label: 'Medicare' },
 ];
@@ -19,7 +19,7 @@ const BARS: { id: BarId; label: string }[] = [
   { id: 'charge', label: 'Billed charge' },
   { id: 'allowed', label: 'Allowed amount' },
   { id: 'planPaid', label: 'Plan paid' },
-  { id: 'patientPaid', label: 'Patient paid' },
+  { id: 'patientPaid', label: 'Patient responsibility' },
   { id: 'cost', label: 'Provider cost' },
   { id: 'medicare', label: 'Medicare would pay' },
 ];
@@ -64,9 +64,9 @@ export function PriceLenses({ view, inputs, step }: Props) {
 
   const content: Record<LensId, { headline: string; value: number; text: string; rows: [string, ReactNode][]; bars: BarId[] }> = {
     patient: {
-      headline: 'The price is what I owe',
+      headline: 'The price is my cost share',
       value: v.patientPaid,
-      text: 'The patient never sees most of the numbers. Their price is the deductible, coinsurance and copays on the explanation of benefits, on top of the premium already taken from each paycheck.',
+      text: 'Members rarely see a charge or an allowed amount until the EOB arrives. What registers is the deductible, the coinsurance and the copay, on top of a payroll deduction that was taken whether or not they used any care.',
       rows: [
         [`Owed for ${scope}`, usd0(v.patientPaid)],
         ['Premium share for the year, paid regardless of care', usd0(premiumEmployee)],
@@ -78,8 +78,8 @@ export function PriceLenses({ view, inputs, step }: Props) {
       headline: inputs.selfFunded ? 'The price is the claims we fund' : 'The price is the premium',
       value: inputs.selfFunded ? employerSelfFunded : 0,
       text: inputs.selfFunded
-        ? 'A self-funded employer pays each claim from its own money, so its price is the plan-paid amount until stop-loss takes over.'
-        : 'A fully insured employer pays the same premium whether or not this care happens. This care costs it nothing extra this year, though heavy claims can raise the renewal.',
+        ? 'A self-funded employer is the payer in everything but name. Each claim is funded from its own account until the member crosses the specific stop-loss attachment point.'
+        : 'A fully insured employer pays the same premium whether or not this care happens. The episode costs it nothing more this year. It will come up at renewal.',
       rows: [
         [`Added employer cost for ${scope}`, usd0(inputs.selfFunded ? employerSelfFunded : 0)],
         [inputs.selfFunded ? 'Budgeted cost per employee, per year' : 'Employer premium per employee, per year', usd0(premiumEmployer)],
@@ -91,20 +91,20 @@ export function PriceLenses({ view, inputs, step }: Props) {
       headline: 'The price is the allowed amount',
       value: v.allowed,
       text: inputs.selfFunded
-        ? 'To the health plan, price means the contract rate it negotiated. In a self-funded plan it pays claims with the employer’s money and earns a fee.'
-        : 'To the health plan, price means the contract rate it negotiated. It pays that amount less the patient’s share, out of premium it has already collected.',
+        ? 'For the payer the price is the allowed amount, the rate its network contract produces. Under an ASO arrangement it pays that amount with the employer\u2019s money and earns a fee for the administration.'
+        : 'For the payer the price is the allowed amount, the rate its network contract produces. It pays that amount, less member cost share, out of premium it has already collected.',
       rows: [
         ['Allowed under the contracts', usd0(v.allowed)],
         ['Discount off billed charges', usd0(v.charge - v.allowed)],
-        ['Paid by the plan', usd0(v.planPaid)],
+        ['Plan paid', usd0(v.planPaid)],
         ['Left to the patient', usd0(v.patientPaid)],
       ],
       bars: ['allowed', 'planPaid'],
     },
     provider: {
-      headline: 'The price is the charge; the revenue is not',
+      headline: 'The charge is the price. The allowed amount is the revenue.',
       value: v.charge,
-      text: 'The provider posts a list price, expects to collect the contract rate, and judges the result against what the care cost to deliver.',
+      text: 'The provider bills from the chargemaster and expects the contract rate. Finance then sets what was collected against what the service cost to produce, and the answer varies a good deal by payer.',
       rows: [
         ['Billed at list price', usd0(v.charge)],
         ['Expected to collect', usd0(collected)],
@@ -116,7 +116,7 @@ export function PriceLenses({ view, inputs, step }: Props) {
     medicare: {
       headline: 'The price is the fee schedule',
       value: v.medicare,
-      text: 'Medicare does not negotiate these prices; it sets them by formula. Commercial contracts are often written as a percentage of this amount.',
+      text: 'Medicare sets these rates by formula and takes no counteroffers. Because commercial contracts are so often written as a percent of Medicare, the public fee schedule ends up anchoring private prices too.',
       rows: [
         ['Medicare would pay', usd0(v.medicare)],
         ['Commercial allowed amount as a share of Medicare', ratio],

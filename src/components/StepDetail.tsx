@@ -39,13 +39,13 @@ export function StepDetail({ step, inputs }: Props) {
 
       <ul className="legend">
         <li>
-          <span className="swatch fill-writeoff" /> Written off by the provider
+          <span className="swatch fill-writeoff" /> Contractual adjustment
         </li>
         <li>
-          <span className="swatch fill-plan" /> Paid by the plan
+          <span className="swatch fill-plan" /> Plan paid
         </li>
         <li>
-          <span className="swatch fill-ded" /> Paid by the patient
+          <span className="swatch fill-ded" /> Patient responsibility
         </li>
       </ul>
 
@@ -87,7 +87,7 @@ export function StepDetail({ step, inputs }: Props) {
                   <td>
                     {l.charge > 0 ? (
                       <div className="track split" role="img" aria-label={`Of ${usd2(l.charge)} billed: ${usd2(l.contractualAdjustment)} written off, ${usd2(l.planPaid)} paid by the plan, ${usd2(l.patientPaid)} paid by the patient`}>
-                        <div className="fill fill-writeoff" style={{ width: `${share(l.contractualAdjustment)}%` }} title={`Written off: ${usd2(l.contractualAdjustment)}`} />
+                        <div className="fill fill-writeoff" style={{ width: `${share(l.contractualAdjustment)}%` }} title={`Contractual adjustment: ${usd2(l.contractualAdjustment)}`} />
                         <div className="fill fill-plan" style={{ width: `${share(l.planPaid)}%` }} title={`Plan paid: ${usd2(l.planPaid)}`} />
                         <div className="fill fill-ded" style={{ width: `${share(l.patientPaid)}%` }} title={`Patient paid: ${usd2(l.patientPaid)}`} />
                       </div>
